@@ -40,6 +40,7 @@ define([
 		_tabIndex : 0,
 		_logNode : "TabSwitcher widget: ",
 		_subscriptionHandle: null,
+		_contextObj: null,
 		
 		// dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
 		constructor: function() {
@@ -65,6 +66,14 @@ define([
 			if (this.enableLogging){
 				console.log(this._logNode + " Searching for tab pane index: " + this.tabAttribute);
 			}
+			var newContext = false;
+			if(obj !== this._contextObj) {
+				this._contextObj = obj;
+				if(this._subscriptionHandle) {
+					this.unsubscribe(this._subscriptionHandle);
+				}
+			}
+
 			if (obj){
 				if(!this._subscriptionHandle){
 					this._subscriptionHandle = 
