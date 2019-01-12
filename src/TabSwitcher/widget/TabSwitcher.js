@@ -4,7 +4,7 @@
     ========================
 
     @file      : TabSwitcher.js
-    @version   : 1.1.0
+    @version   : 1.1.1
     @author    : Ivo Sturm
     @date      : 12-10-2017
     @copyright : First Consulting
@@ -39,6 +39,8 @@ define([
 		_hasStarted : false,
 		_tabIndex : 0,
 		_logNode : "TabSwitcher widget: ",
+		_subscriptionHandle: null,
+		_contextObj: null,
 		
 		// dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
 		constructor: function() {
@@ -64,12 +66,22 @@ define([
 			if (this.enableLogging){
 				console.log(this._logNode + " Searching for tab pane index: " + this.tabAttribute);
 			}
+			var newContext = false;
+			if(obj !== this._contextObj) {
+				this._contextObj = obj;
+				if(this._subscriptionHandle) {
+					this.unsubscribe(this._subscriptionHandle);
+				}
+			}
+
 			if (obj){
-				this.subscribe({
-					guid : obj.getGuid(),
-					callback : this.objChanged
-				});
-			
+				if(!this._subscriptionHandle){
+					this._subscriptionHandle = 
+					this.subscribe({
+						guid : obj.getGuid(),
+						callback : this.objChanged
+					});
+				}
 				this.contextGUID = obj.getGuid();
 				
 				if (this.contextGUID) {
