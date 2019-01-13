@@ -32,17 +32,20 @@ define([
 		tabclass : '',
 		tabAttribute : '',
 		tabMicroflow: "",
+		setAttrOnClick: false,
 		
 		_tabContainer : null,
 		_hasStarted : false,
 		_tabIndex : 0,
 		_logNode : "TabSwitcher widget: ",
-		_subscriptionHandle: null,
+		_subscriptionHandleObj: null,
+		_subscriptionHandleAttr: null,
 		_contextObj: null,
+		_clickHandleList: null,
 		
 		// dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
 		constructor: function() {
-
+			this._clickHandleList = [];
 		},
 		postCreate: function () {
 			
@@ -56,7 +59,7 @@ define([
 				this.source = 'Attribute';
 			}	
 			
-			this.actLoaded();
+			//this.actLoaded();
 		},
 				
 		update : function(obj, callback) {
@@ -64,27 +67,15 @@ define([
 			if (this.enableLogging){
 				console.log(this._logNode + " Searching for tab pane index: " + this.tabAttribute);
 			}
-
-			if(obj && (obj !== this._contextObj)) {
-				this._contextObj = obj;
-				// only unsubscribe if context changed
-				if(this._subscriptionHandle) {
-					this.unsubscribe(this._subscriptionHandle);
-				}
+			this._contextObj = obj;
+			this._resetSubscriptions();
+			if (obj) {
+				this._updateRendering(obj);
 			}
 
-			if (obj){
-				// always subscribe if no subsciptions are there yet
-				if(!this._subscriptionHandle){
-					this._subscriptionHandle = 
-					this.subscribe({
-						guid : obj.getGuid(),
-						callback : this._objChanged
-					});
-				}
-				
+			if(this.setAttrOnClick) {
+				this._setupClickListeners();
 			}		
-
 			typeof(callback) == "function" && callback();
 		},
 		_updateRendering : function(obj){
@@ -170,8 +161,66 @@ define([
 			}, this);
 		},
 
+		_resetSubscriptions: function() {
+			this._removeSubscriptions();
+			this._addSubscriptions();
+		},
 
-		uninitialize : function(){
+		_removeSubscriptions: function() {
+			this.unsubscribeAll();
+		},
+
+		_addSubscriptions: function() {
+			if(this._contextObj) {
+				this.unsubscribeAll();
+				//obj refresh handler
+				this.subscribe({
+					guid : this._contextObj.getGuid(),
+					callback : this._objChanged
+				});
+				//attribute change handler
+				if(this.tabAttribute ) {
+					this.subscribe({
+						guid : this._contextObj.getGuid(),
+						attr: this.tabAttribute,
+						callback : this._objChanged
+					});
+				}
+			}
+		},
+
+		_setupClickListeners: function() {
+			if(this._contextObj && !this._clickHandleList.length) {
+				this._tabContainer = dijit.byNode(dojo.query("."+this.tabclass)[0]);
+				var tabList = this._tabContainer.getChildren();
+				if(tabList) {
+					var onTabClick = this._onTabClick.bind(this);
+					tabList.forEach(function(tab) {
+						var handle = this.connect(tab.button, "click", function() {
+							onTabClick(tab);
+						});
+						this._clickHandleList.push(handle);
+					}.bind(this));
+				} else {
+					console.error("Could not find tabs to set click listeners");
+				}
+			}
+		},
+
+		//called when a tab is clicked
+		_onTabClick: function(tab) {
+			var index = this._tabContainer.getChildren().indexOf(tab);
+			this._updateTabAttr(index);
+		},
+
+		//updates the tab attribute value
+		_updateTabAttr: function(index) {
+			this._removeSubscriptions();
+			this._contextObj.set(this.tabAttribute, index);
+			this._addSubscriptions();
+		},
+
+		uninitialize: function(){
 		}
     });
 });

@@ -29,7 +29,7 @@
 			<description>The class assigned to the tab container.</description>
 		</property>
 		<property key="tabMicroflow" type="microflow" required="false">
-			<caption>Tab Microflow</caption>
+			<caption>Tab Get Microflow</caption>
 			<category>Data source</category>
 			<description>Select the Microflow that determines which tab pane to select.</description>
 			<returnType type="Integer"/> 
@@ -37,12 +37,17 @@
 		<property key="tabAttribute" type="attribute" required="false">
             <caption>Tab Attribute</caption>
             <category>Data source</category>
-            <description>Select the attribute that indicates the tab number. The first tab is indicated as 0.</description> 
+            <description>Select the attribute that indicates the tab number. The first tab is indicated as 0. When a user clicks a tab, it will also update this value.</description> 
 		  <attributeTypes>
 			<attributeType name="Integer"/> 
 			<attributeType name="Long"/> 
 		  </attributeTypes>
         </property>
+		<property key="setAttrOnClick" type="boolean" defaultValue="false">
+			<caption>Also set tab</caption>
+			<category>Behavior</category>
+			<description>If true, the widget will set your tab attribute value upon a user click.</description>
+		</property>
 		<property key="enableLogging" type="boolean" defaultValue="false">
 		  <caption>Enable Logging</caption>
 		  <category>Behavior</category>
