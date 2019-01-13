@@ -1,19 +1,17 @@
-
 /*
     Default
     ========================
-
     @file      : TabSwitcher.js
     @version   : 1.1.1
     @author    : Ivo Sturm
     @date      : 12-10-2017
     @copyright : First Consulting
     @license   : Apache v3
-
     Documentation
     ========================
     20160531 - First version includes the usage of an attribute of the context object and a microflow to set the active pane of a tab container.
 	20171012 - Upgrade to Mx 7. No real changes were needed except an upgrade of the package.xml file. Also added generic _logNode variable.
+	20190112 - Made sure to reset the subscription only if the context object changes. Made _updateRendering separate function
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
@@ -66,65 +64,69 @@ define([
 			if (this.enableLogging){
 				console.log(this._logNode + " Searching for tab pane index: " + this.tabAttribute);
 			}
-			var newContext = false;
-			if(obj !== this._contextObj) {
+
+			if(obj && (obj !== this._contextObj)) {
 				this._contextObj = obj;
+				// only unsubscribe if context changed
 				if(this._subscriptionHandle) {
 					this.unsubscribe(this._subscriptionHandle);
 				}
 			}
 
 			if (obj){
+				// always subscribe if no subsciptions are there yet
 				if(!this._subscriptionHandle){
 					this._subscriptionHandle = 
 					this.subscribe({
 						guid : obj.getGuid(),
-						callback : this.objChanged
+						callback : this._objChanged
 					});
 				}
-				this.contextGUID = obj.getGuid();
 				
-				if (this.contextGUID) {
-					if (this.source === 'Microflow') {
-						if (this.enableLogging){
-							console.log(this._logNode + " Source=Microflow");
-						}
-						mx.data.action({
-							params: {
-								applyto: "selection",
-								actionname: this.tabMicroflow,
-								guids: [this.contextGUID]
-							},
-							callback: dojo.hitch(this, function (result) {
-								this.selectTab(result);
-							}),
-							error: function(error) {
-								console.log(error.description);
-							}
-						}, this);
-					} else if (this.source === 'Attribute') {
-						if (this.enableLogging){
-							console.log(this._logNode + "Source=Attribute");
-							console.log(this._logNode + "AttributeName="+this.tabAttribute);
-						}
-						var missingAttrs = false, index = 0;
-						if (!obj.has(this.tabAttribute)) {
-							missingAttrs = true;
-						} else {
-							index = obj.get(this.tabAttribute);
-						}
-						if (this.enableLogging){
-							console.log(this._logNode + "Tab Pane Index: " + this.tabAttribute + (missingAttrs ? " is missing " : "") + " Tab Pane Index value: " + index );
-						}
-						this.selectTab(index);
-						
-					}
-				}
 			}		
 
 			typeof(callback) == "function" && callback();
 		},
-		
+		_updateRendering : function(obj){
+			this.contextGUID = obj.getGuid();
+				
+			if (this.contextGUID) {
+				if (this.source === 'Microflow') {
+					if (this.enableLogging){
+						console.log(this._logNode + " Source=Microflow");
+					}
+					mx.data.action({
+						params: {
+							applyto: "selection",
+							actionname: this.tabMicroflow,
+							guids: [this.contextGUID]
+						},
+						callback: dojo.hitch(this, function (result) {
+							this.selectTab(result);
+						}),
+						error: function(error) {
+							console.log(error.description);
+						}
+					}, this);
+				} else if (this.source === 'Attribute') {
+					if (this.enableLogging){
+						console.log(this._logNode + "Source=Attribute");
+						console.log(this._logNode + "AttributeName="+this.tabAttribute);
+					}
+					var missingAttrs = false, index = 0;
+					if (!obj.has(this.tabAttribute)) {
+						missingAttrs = true;
+					} else {
+						index = obj.get(this.tabAttribute);
+					}
+					if (this.enableLogging){
+						console.log(this._logNode + "Tab Pane Index: " + this.tabAttribute + (missingAttrs ? " is missing " : "") + " Tab Pane Index value: " + index );
+					}
+					this.selectTab(index);
+					
+				}
+			}
+		},
 		getTab : function ( _tabIndex ) {
 			var gototab = null;
 			this._tabContainer = dijit.byNode(dojo.query("."+this.tabclass)[0]);
@@ -160,12 +162,14 @@ define([
 			}
 		},
 		
-		objChanged : function (objId) {
+		_objChanged : function (objId) {
+			// get the mendix object and update rendering in scenario where context object got changed outside of the widget
 			mx.data.get({
 				guid : objId,
-				callback : this.update
+				callback : this._updateRendering
 			}, this);
 		},
+
 
 		uninitialize : function(){
 		}
