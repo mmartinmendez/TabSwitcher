@@ -146,10 +146,8 @@ define([
 
 		selectTab : function (index) {
 			var tab = this.getTab(index);
-			if (tab) {
-				
+			if (tab && tab !== this._tabContainer._active) {
 				this._tabContainer.showTab(tab);
-
 			}
 		},
 		
