@@ -23,10 +23,15 @@
 	</icon>
 
 	<properties>
-		<property key="tabclass" type="string">
-			<caption>Tab class</caption>
+		<property key="tabclass" type="string" required="true">
+			<caption>Tab Class</caption>
 			<category>Behavior</category>
 			<description>The class assigned to the tab container.</description>
+		</property>
+		<property key="setAttrOnClick" type="boolean" defaultValue="false">
+			<caption>Keep Tab Attribute Updated</caption>
+			<category>Behavior</category>
+			<description>If true, this widget will update your tab attribute value accordingly after a user click.</description>
 		</property>
 		<property key="tabMicroflow" type="microflow" required="false">
 			<caption>Tab Get Microflow</caption>
@@ -37,22 +42,16 @@
 		<property key="tabAttribute" type="attribute" required="false">
             <caption>Tab Attribute</caption>
             <category>Data source</category>
-            <description>Select the attribute that indicates the tab number. The first tab is indicated as 0. When a user clicks a tab, it will also update this value.</description> 
+            <description>Select the attribute that indicates the tab number/index. The first tab index is 0. When a user clicks a tab, it will also update the value of this attribute..</description> 
 		  <attributeTypes>
 			<attributeType name="Integer"/> 
 			<attributeType name="Long"/> 
 		  </attributeTypes>
         </property>
-		<property key="setAttrOnClick" type="boolean" defaultValue="false">
-			<caption>Also set tab</caption>
-			<category>Behavior</category>
-			<description>If true, the widget will set your tab attribute value upon a user click.</description>
-		</property>
 		<property key="enableLogging" type="boolean" defaultValue="false">
 		  <caption>Enable Logging</caption>
-		  <category>Behavior</category>
-		  <description>The boolean can enable/disable logging on this widget for debugging purposes.</description>
+		  <category>Logging</category>
+		  <description>The boolean can enable/disable logging on this widget for debugging purposes. Don't set this to 'Yes' in Production environments!</description>
 		</property>
-
 	</properties>
 </widget>
