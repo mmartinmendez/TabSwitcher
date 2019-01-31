@@ -26,7 +26,7 @@
 		<property key="tabclass" type="string" required="true">
 			<caption>Tab Class</caption>
 			<category>Behavior</category>
-			<description>The class assigned to the tab container.</description>
+			<description>The CSS class assigned to the tab container in the Modeler. Please assign a CSS class in the Modeler to the tab container on which you want the tab panes to be updated dynamically by this widget. Add this CSS class here so the widget knows which tab container to target.</description>
 		</property>
 		<property key="setAttrOnClick" type="boolean" defaultValue="false">
 			<caption>Keep Tab Attribute Updated</caption>
@@ -34,7 +34,7 @@
 			<description>If true, this widget will update your tab attribute value accordingly after a user click.</description>
 		</property>
 		<property key="tabMicroflow" type="microflow" required="false">
-			<caption>Tab Get Microflow</caption>
+			<caption>Get Tab Pane Index Microflow</caption>
 			<category>Data source</category>
 			<description>Select the Microflow that determines which tab pane to select.</description>
 			<returnType type="Integer"/> 
