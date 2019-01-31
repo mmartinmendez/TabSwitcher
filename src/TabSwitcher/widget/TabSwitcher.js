@@ -2,9 +2,9 @@
     Default
     ========================
     @file      : TabSwitcher.js
-    @version   : 1.1.1
+    @version   : 1.2.0
     @author    : Ivo Sturm
-    @date      : 12-10-2017
+    @date      : 31-1-2019
     @copyright : First Consulting
     @license   : Apache v3
     Documentation
@@ -12,6 +12,7 @@
     20160531 - First version includes the usage of an attribute of the context object and a microflow to set the active pane of a tab container.
 	20171012 - Upgrade to Mx 7. No real changes were needed except an upgrade of the package.xml file. Also added generic _logNode variable.
 	20190112 - Made sure to reset the subscription only if the context object changes. Made _updateRendering separate function
+	20190131 - 
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
