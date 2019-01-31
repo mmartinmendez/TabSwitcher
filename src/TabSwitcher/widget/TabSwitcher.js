@@ -12,7 +12,7 @@
     20160531 - First version includes the usage of an attribute of the context object and a microflow to set the active pane of a tab container.
 	20171012 - Upgrade to Mx 7. No real changes were needed except an upgrade of the package.xml file. Also added generic _logNode variable.
 	20190112 - Made sure to reset the subscription only if the context object changes. Made _updateRendering separate function
-	20190131 - 
+	20190131 - refactor + add click listener to set attribute on tab click
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
