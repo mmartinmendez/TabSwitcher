@@ -2,7 +2,7 @@
     Default
     ========================
     @file      : TabSwitcher.js
-    @version   : 1.2.0
+    @version   : 1.3.0
     @author    : Ivo Sturm
     @date      : 31-1-2019
     @copyright : First Consulting
@@ -13,6 +13,7 @@
 	20171012 - Upgrade to Mx 7. No real changes were needed except an upgrade of the package.xml file. Also added generic _logNode variable.
 	20190112 - Made sure to reset the subscription only if the context object changes. Made _updateRendering separate function
 	20190131 - refactor + add click listener to set attribute on tab click
+	20190710 - added extra check for ill-configuration of widget. A check is now implemented whether the first item on the page, having the TabSwitcher CSS class, is the actual Tab Container.
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
@@ -121,28 +122,35 @@ define([
 		},
 		getTab : function ( _tabIndex ) {
 			var gototab = null;
-			this._tabContainer = dijit.byNode(dojo.query("."+this.tabclass)[0]);
+			
+			if (dojo.query("."+this.tabclass)[0].classList.contains('mx-tabcontainer')){
+			
+				this._tabContainer = dijit.byNode(dojo.query("."+this.tabclass)[0]);
+				
 
-			var tablist = this._tabContainer.getChildren();
-			
-			if( _tabIndex == null ) 
-				_tabIndex = 0;
-			if (this.enableLogging){
-				console.log(this._logNode + "Searching for tab index: " + _tabIndex);
-			}
-			
-			if (tablist.length > 0 ) {
-				if( _tabIndex >= tablist.length ) {
-					_tabIndex = tablist.length - 1;
-					if (this.enableLogging){
-						console.debug(this._logNode + "Setting tab index to: " + _tabIndex);
-					}
+				var tablist = this._tabContainer.getChildren();
+				
+				if( _tabIndex == null ) 
+					_tabIndex = 0;
+				if (this.enableLogging){
+					console.log(this._logNode + "Searching for tab index: " + _tabIndex);
 				}
 				
-				gototab = tablist[_tabIndex];
-	
-			}
-			return gototab;
+				if (tablist.length > 0 ) {
+					if( _tabIndex >= tablist.length ) {
+						_tabIndex = tablist.length - 1;
+						if (this.enableLogging){
+							console.debug(this._logNode + "Setting tab index to: " + _tabIndex);
+						}
+					}
+					
+					gototab = tablist[_tabIndex];
+		
+				}
+				return gototab;
+			} else {
+				alert(this._logNode + ' The widget seems ill-configured; only 2 elements on the page can have the CSS class selected in the widget; the Tab Container and the TabSwitcher widget (which should be placed below the Tab Container). Found ' + dojo.query("."+this.tabclass).length + ' elements!');
+			}	
 		},
 
 		selectTab : function (index) {
