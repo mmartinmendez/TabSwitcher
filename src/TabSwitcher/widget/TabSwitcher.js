@@ -2,9 +2,9 @@
     Default
     ========================
     @file      : TabSwitcher.js
-    @version   : 1.3.0
+    @version   : 1.4.0
     @author    : Ivo Sturm
-    @date      : 31-1-2019
+    @date      : 24-08-2020
     @copyright : First Consulting
     @license   : Apache v3
     Documentation
@@ -14,7 +14,8 @@
 	20190112 - Made sure to reset the subscription only if the context object changes. Made _updateRendering separate function
 	20190131 - refactor + add click listener to set attribute on tab click
 	20190710 - added extra check for ill-configuration of widget. A check is now implemented whether the first item on the page, having the TabSwitcher CSS class, is the actual Tab Container.
-*/
+	20200824 - fix for reloading page not maintaining keeping attribute updated when 'Keep Tab Attribute Updated' is selected
+	*/
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
 define([
@@ -199,6 +200,20 @@ define([
 		_setupClickListeners: function() {
 			if(this._contextObj && !this._clickHandleList.length) {
 				this._tabContainer = dijit.byNode(dojo.query("."+this.tabclass)[0]);
+
+				//handle the case that the page is being opened again
+				var list = dojo.query("."+this.tabclass); //returns a list of tabs from the dom
+				if (list){
+					list.forEach(function (item){
+						var node = dijit.byNode(item); // register each item
+						//if multiple items are returned then that means one container is in the process of being destroyed and the other is being created.
+						//check for the being destroyed flag and set the tab container correctly
+						if (node && !node._beingDestroyed){ 
+							this._tabContainer = node;
+						}
+					}.bind(this));
+				}
+
 				var tabList = this._tabContainer.getChildren();
 				if(tabList) {
 					var onTabClick = this._onTabClick.bind(this);
